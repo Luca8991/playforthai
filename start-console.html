@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Console</title>
+
+    <!-- update the version number as needed -->
+    <script defer src="/__/firebase/5.0.4/firebase-app.js"></script>
+    <!-- include only the Firebase features as you need -->
+    <script defer src="/__/firebase/5.0.4/firebase-auth.js"></script>
+    <script defer src="/__/firebase/5.0.4/firebase-database.js"></script>
+    <script defer src="/__/firebase/5.0.4/firebase-messaging.js"></script>
+    <script defer src="/__/firebase/5.0.4/firebase-storage.js"></script>
+    <!-- initialize the SDK after all desired features are loaded -->
+    <script defer src="/__/firebase/init.js"></script>
+
+    <script src="jquery-3.3.1.min.js"></script>
+
+    <link rel="stylesheet" type="text/css" href="style.css">
+  </head>
+  <body>
+    <div class="iscrizione-squadre" style="display: none;">
+      <input type="text" id="input-nome-squadra" placeholder="Nome..." />
+      <select id="select-girone">
+        <option value="A">
+          A
+        </option>
+        <option value="B">
+          B
+        </option>
+      </select>
+      <button id="btn-iscrizione-squadra">OK!</button>
+    </div>
+    <div class="iscrizione-squadre" style="">
+
+      <select id="select-girone-sfide">
+        <option value="0">
+          0
+        </option>
+        <option value="A">
+          A
+        </option>
+        <option value="B">
+          B
+        </option>
+      </select>
+
+      <select id="select-squadra-1">
+        <option value="0">
+          0
+        </option>
+      </select>
+      <select id="select-squadra-2">
+        <option value="0">
+          0
+        </option>
+      </select>
+
+
+      <input type="text" id="input-ora-sfida-and" placeholder="Andata..." style="width: 100px;"/>
+      <input type="text" id="input-ora-sfida-rit" placeholder="Ritorno..." style="width: 100px;"/>
+      <button id="btn-insert-sfida">OK!</button>
+    </div>
+    <p id="load">Firebase SDK Loading&hellip;</p>
+
+    <script>
+      document.addEventListener('DOMContentLoaded', function() {
+        // // 🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥
+        // // The Firebase SDK is initialized and available here!
+        //
+        // firebase.auth().onAuthStateChanged(user => { });
+        // firebase.database().ref('/path/to/ref').on('value', snapshot => { });
+        // firebase.messaging().requestPermission().then(() => { });
+        // firebase.storage().ref('/path/to/ref').getDownloadURL().then(() => { });
+        //
+        // // 🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥
+
+        try {
+          let app = firebase.app();
+          let features = ['auth', 'database', 'messaging', 'storage'].filter(feature => typeof app[feature] === 'function');
+          document.getElementById('load').innerHTML = `Firebase SDK loaded with ${features.join(', ')}`;
+        } catch (e) {
+          console.error(e);
+          document.getElementById('load').innerHTML = 'Error loading the Firebase SDK, check the console.';
+        }
+
+        $("#btn-iscrizione-squadra").click(function(){
+          var nome = $("#input-nome-squadra").val().toUpperCase();
+          var girone = $("#select-girone").val();
+
+          var teamData = {
+              name: nome,
+              girone: girone,
+              score: 0,
+              gf: 0,
+              gs: 0
+            };
+
+          // Get a key for a new Post.
+          var newKey = firebase.database().ref().push().key;
+
+          // Write the new post's data simultaneously in the posts list and the user's post list.
+          var updates = {};
+          updates['/squadre/' + newKey] = teamData;
+
+          firebase.database().ref().update(updates, completed);
+        });
+
+        $("#select-girone-sfide").on('change', function(){
+          var girone = this.value;
+          firebase.database().ref('/squadre').orderByChild('girone').equalTo(girone).once('value', function(snap){
+            //$("#select-squadre option[value='0']").remove();
+            $("#select-squadra-1").find("option").remove();
+            $("#select-squadra-2").find("option").remove();
+
+            var i = snap.numChildren();
+            //$("#numero-squadre span").text(i);
+            snap.forEach(function (snapshot) {
+              var key = snapshot.key;
+              var name = snapshot.val().name;
+
+              $('#select-squadra-1').append($("<option></option>").attr("value",key).text(name));
+              $('#select-squadra-2').append($("<option></option>").attr("value",key).text(name));
+
+              i--;
+            });
+
+            //$('#select-squadre').append($("<option></option>").attr("value",0).text("0 - 0"));
+          });
+        });
+
+        $("#btn-insert-sfida").click(function(){
+          var andata = $("#input-ora-sfida-and").val();
+          var ritorno = $("#input-ora-sfida-rit").val();
+          var s1 = $("#select-squadra-1").val();
+          var s2 = $("#select-squadra-2").val();
+
+          var sfidaData = {
+              s1: s1,
+              s2: s2,
+              andata: andata,
+              ritorno: ritorno,
+              risultato: 0
+            };
+
+          // Get a key for a new Post.
+          var newKey = firebase.database().ref().push().key;
+
+          // Write the new post's data simultaneously in the posts list and the user's post list.
+          var updates = {};
+          updates['/partite/' + newKey] = sfidaData;
+
+          firebase.database().ref().update(updates, completed);
+        });
+
+      });
+
+      function completed(){
+        alert("Fatto!");
+      }
+    </script>
+  </body>
+</html>
