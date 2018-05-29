@@ -66,6 +66,7 @@ document.addEventListener('DOMContentLoaded', function() {
   $("#btn-insert-sfida").click(function(){
     var andata = $("#input-ora-sfida-and").val();
     var ritorno = $("#input-ora-sfida-rit").val();
+    var girone = $("#select-girone").val();
     var s1 = $("#select-squadra-1").val();
     var s2 = $("#select-squadra-2").val();
 
@@ -73,14 +74,16 @@ document.addEventListener('DOMContentLoaded', function() {
         s1: s1,
         s2: s2,
         ora: andata,
-        risultato: 0
+        risultato: 0,
+        girone: girone
       };
 
     var sfidaData2 = { //dati partita di ritorno
         s1: s2, //inverti squadre per partita di ritorno
         s2: s1,
         ora: ritorno,
-        risultato: 0
+        risultato: 0,
+        girone: girone
       };
 
     // Get a key for a new Post.
