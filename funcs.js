@@ -237,8 +237,13 @@ function fillFormMarcatori(girone, key_partita, s1, s2){
 
   //inserisci squadre nella select per squadre
   $('#select-marc-squadra-'+girone).find("option").remove(); //pulisci opzioni
-  fillSelectSquadra(s1, girone);
-  fillSelectSquadra(s2, girone);
+
+  var x = 1;
+  fillSelectSquadra(s1, girone, x);
+  $('#input-ris-finale-'+girone).attr('data-s1', s1);
+  x++;
+  fillSelectSquadra(s2, girone, x);
+  $('#input-ris-finale-'+girone).attr('data-s2', s2);
 
   //inserisci marcatori prima squadra nella select per marcatori
   fillSelectMarcatore(s1, girone);
@@ -247,14 +252,16 @@ function fillFormMarcatori(girone, key_partita, s1, s2){
   $("#input-ris-finale-"+girone).attr('data-partita', key_partita);
 }
 
-function fillSelectSquadra(squadra, girone){
+function fillSelectSquadra(squadra, girone, squadra_index){
   firebase.database().ref('/squadre').orderByKey().equalTo(squadra).once('value', function(snap){
     snap.forEach(function (snapshot) {
       var nome_s1 = snapshot.val().name;
       var gf_1 = snapshot.val().gf;
       var gs_1 = snapshot.val().gs;
+      var score_1 = snapshot.val().score;
 
       $('#select-marc-squadra-'+girone).append($("<option data-gf='"+gf_1+"' data-gs='"+gs_1+"'></option>").attr("value",squadra).text(nome_s1));
+      $('#input-ris-finale-'+girone).attr("data-score"+squadra_index, score_1);
     });
   });
 }
@@ -278,9 +285,32 @@ function updateRisultato(girone){
   var risultato = $("#input-ris-finale-"+girone).val();
   var key_partita = $("#input-ris-finale-"+girone).attr("data-partita");
 
-  // Write the new post's data simultaneously in the posts list and the user's post list.
+  var gols = risultato.split(" - "); //separa i gol delle due squadre e crea array
+  var gol_s1 = Number(gols[0]);
+  var gol_s2 = Number(gols[1]);
+
+
+  var s1 = $("#input-ris-finale-"+girone).attr("data-s1");
+  var score_s1 = Number($("#input-ris-finale-"+girone).attr("data-score1"));
+  var s2 = $("#input-ris-finale-"+girone).attr("data-s2");
+  var score_s2 = Number($("#input-ris-finale-"+girone).attr("data-score2"));
+
   var updates = {};
-  updates['/partite/' + key_partita + '/risultato'] = risultato;
+
+  updates['/partite/'+ key_partita + '/risultato'] = risultato;
+
+  if(gol_s1 > gol_s2){ //s1 ha fatto piu' gol -> s1 vince, s2 perde
+    score_s1 += 3;
+    updates['/squadre/' + s1 + '/score'] = score_s1;
+  }else if(gol_s1 < gol_s2){ //s1 ha fatto meno gol -> s1 perde, s2 vince
+    score_s2 += 3;
+    updates['/squadre/' + s2 + '/score'] = score_s2;
+  }else if(gol_s1 === gol_s2){ //s1 e s2 hanno fatto gli stessi gol -> pareggio
+    score_s1 += 1;
+    score_s2 += 1;
+    updates['/squadre/' + s1 + '/score'] = score_s1;
+    updates['/squadre/' + s2 + '/score'] = score_s2;
+  }
 
   firebase.database().ref().update(updates, completed);
 }
