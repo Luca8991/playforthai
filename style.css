@@ -56,12 +56,19 @@ tr:nth-child(even) {
   width: 100%;
   margin-top: 30px;
 }
-.iscrizione-squadre input{
+.iscrizione-squadre input, select, button{
   font-size: 35px;
 }
-.iscrizione-squadre select{
-  font-size: 35px;
+
+.marcatori-partite{
+  margin-top: 50px;
 }
-.iscrizione-squadre button{
-  font-size: 35px;
+.marcatori-partite input, select, button, p{
+  font-size: 30px;
+}
+.marcatori-partite p{
+  font-weight: bold;
+}
+.input-gol-marcatore{
+  width: 50px;
 }

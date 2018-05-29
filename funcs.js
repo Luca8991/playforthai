@@ -98,6 +98,28 @@ document.addEventListener('DOMContentLoaded', function() {
     firebase.database().ref().update(updates, completed);
   });
 
+  $(".marc-squadra-selection").on('change', function(){
+    var id_select = $(this).attr('id');
+    var squadra = $('#'+id_select).val();
+    var girone = id_select.slice(-1);
+
+    $("#input-nome-"+girone).prop('disabled', false); //abilita input nome al cambio squadra
+
+    fillSelectMarcatore(squadra, girone);
+  });
+
+  $(".marc-marcatore-selection").on('change', function(){
+    var id_select = $(this).attr('id');
+    var marcatore = $('#'+id_select).val();
+    var girone = id_select.slice(-1);
+
+    if(marcatore === '0'){
+      $("#input-nome-"+girone).prop('disabled', false);
+    } else{
+      $("#input-nome-"+girone).prop('disabled', true);
+    }
+  });
+
 });
 
 function completed(){
@@ -123,7 +145,7 @@ function getPartite(){
       var girone = snapshot.val().girone;
 
       if(risultato === 0){
-        risultato = " - "
+        risultato = " - ";
       }
 
       firebase.database().ref('/squadre').orderByKey().equalTo(s1).once('value', function(snap){
@@ -170,7 +192,7 @@ function getPartiteConsole(){
       var girone = snapshot.val().girone;
 
       if(risultato === 0){
-        risultato = " - "
+        risultato = "<button onclick=\"fillFormMarcatori('"+girone+"', '"+key+"', '"+s1+"', '"+s2+"')\">Aggiorna</button>";
       }
 
       firebase.database().ref('/squadre').orderByKey().equalTo(s1).once('value', function(snap){
@@ -195,6 +217,49 @@ function getPartiteConsole(){
       });
 
       i--;
+    });
+  });
+}
+
+function fillFormMarcatori(girone, key_partita, s1, s2){
+  //partita all'inizio del form
+  var sfida = $('#'+key_partita).find("td:eq(1)").text(); //prendi il testo del td sfida
+  $("#p-partita-"+girone).text(sfida);
+
+  //inserisci squadre nella select per squadre
+  firebase.database().ref('/squadre').orderByKey().equalTo(s1).once('value', function(snap){
+    snap.forEach(function (snapshot) {
+      var nome_s1 = snapshot.val().name;
+
+      $('#select-marc-squadra-'+girone).append($("<option></option>").attr("value",s1).text(nome_s1));
+    });
+  });
+  firebase.database().ref('/squadre').orderByKey().equalTo(s2).once('value', function(snap){
+    snap.forEach(function (snapshot) {
+      var nome_s2 = snapshot.val().name;
+
+      $('#select-marc-squadra-'+girone).append($("<option></option>").attr("value",s2).text(nome_s2));
+    });
+  });
+
+  //inserisci marcatori prima squadra nella select per marcatori
+  fillSelectMarcatore(s1, girone);
+
+  //id partita nell'input aggiornamento risultato finale
+  $("#input-ris-finale-"+girone).attr('data-partita', key_partita);
+}
+
+function fillSelectMarcatore(squadra, girone){
+  $('#select-marc-marcatore-'+girone).find("option").remove(); //pulisci opzioni
+  $('#select-marc-marcatore-'+girone).append($("<option data-gol='0'></option>").attr("value",'0').text("NUOVO"));
+
+  firebase.database().ref('/marcatori').orderByChild('squadra').equalTo(squadra).once('value', function(snap){
+    snap.forEach(function (snapshot) {
+      var key_1 = snapshot.key;
+      var nome_1 = snapshot.val().nome;
+      var gol_1 = snapshot.val().gol;
+
+      $('#select-marc-marcatore-'+girone).append($("<option data-gol='"+gol_1+"'></option>").attr("value",key_1).text(nome_1));
     });
   });
 }
