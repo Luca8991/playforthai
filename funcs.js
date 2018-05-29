@@ -18,6 +18,10 @@ document.addEventListener('DOMContentLoaded', function() {
     document.getElementById('load').innerHTML = 'Error loading the Firebase SDK, check the console.';
   }
 
+  $('input').click(function(){
+      $(this).select();
+  });
+
   $("#btn-iscrizione-squadra").click(function(){
     var nome = $("#input-nome-squadra").val().toUpperCase();
     var girone = $("#select-girone").val();
@@ -262,4 +266,15 @@ function fillSelectMarcatore(squadra, girone){
       $('#select-marc-marcatore-'+girone).append($("<option data-gol='"+gol_1+"'></option>").attr("value",key_1).text(nome_1));
     });
   });
+}
+
+function updateRisultato(girone){
+  var risultato = $("#input-ris-finale-"+girone).val();
+  var key_partita = $("#input-ris-finale-"+girone).attr("data-partita");
+
+  // Write the new post's data simultaneously in the posts list and the user's post list.
+  var updates = {};
+  updates['/partite/' + key_partita + '/risultato'] = risultato;
+
+  firebase.database().ref().update(updates, completed);
 }
