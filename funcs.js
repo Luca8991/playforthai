@@ -66,7 +66,7 @@ document.addEventListener('DOMContentLoaded', function() {
   $("#btn-insert-sfida").click(function(){
     var andata = $("#input-ora-sfida-and").val();
     var ritorno = $("#input-ora-sfida-rit").val();
-    var girone = $("#select-girone").val();
+    var girone = $("#select-girone-sfide").val();
     var s1 = $("#select-squadra-1").val();
     var s2 = $("#select-squadra-2").val();
 
@@ -107,6 +107,53 @@ function completed(){
 function getPartite(){
   var appendhtml = '';
   var color = "";
+
+  firebase.database().ref('/partite').orderByChild('ora').on('value', function(snap){
+    //elimina prime righe vuote tabelle partite
+    $("#partite-a table").find("tr:gt(0)").remove();
+    $("#partite-b table").find("tr:gt(0)").remove();
+
+    var i = snap.numChildren();
+    snap.forEach(function (snapshot) {
+      var key = snapshot.key;
+      var s1 = snapshot.val().s1;
+      var s2 = snapshot.val().s2;
+      var ora = snapshot.val().ora;
+      var risultato = snapshot.val().risultato;
+      var girone = snapshot.val().girone;
+
+      if(risultato === 0){
+        risultato = " - "
+      }
+
+      firebase.database().ref('/squadre').orderByKey().equalTo(s1).once('value', function(snap){
+        snap.forEach(function (snapshot) {
+          s1 = snapshot.val().name;
+        });
+        firebase.database().ref('/squadre').orderByKey().equalTo(s2).once('value', function(snap){
+          snap.forEach(function (snapshot) {
+            s2 = snapshot.val().name;
+          });
+
+          appendhtml = "<tr id='"+key+"'><td>"+ora+"</td><td>"+s1+" - "+s2+"</td><td>"+risultato+"</td></tr>";
+
+          console.log(appendhtml);
+
+          if(girone === "A"){
+            $('#partite-a table tr:last').after(appendhtml);
+          }else if(girone === "B"){
+            $('#partite-b table tr:last').after(appendhtml);
+          }
+        });
+      });
+
+      i--;
+    });
+  });
+}
+
+function getPartiteConsole(){
+  var appendhtml = '';
 
   firebase.database().ref('/partite').orderByChild('ora').on('value', function(snap){
     //elimina prime righe vuote tabelle partite
