@@ -69,20 +69,28 @@ document.addEventListener('DOMContentLoaded', function() {
     var s1 = $("#select-squadra-1").val();
     var s2 = $("#select-squadra-2").val();
 
-    var sfidaData = {
+    var sfidaData1 = { //dati partita di andata
         s1: s1,
         s2: s2,
-        andata: andata,
-        ritorno: ritorno,
+        ora: andata,
+        risultato: 0
+      };
+
+    var sfidaData2 = { //dati partita di ritorno
+        s1: s2, //inverti squadre per partita di ritorno
+        s2: s1,
+        ora: ritorno,
         risultato: 0
       };
 
     // Get a key for a new Post.
-    var newKey = firebase.database().ref().push().key;
+    var newKey1 = firebase.database().ref().push().key;
+    var newKey2 = firebase.database().ref().push().key;
 
     // Write the new post's data simultaneously in the posts list and the user's post list.
     var updates = {};
-    updates['/partite/' + newKey] = sfidaData;
+    updates['/partite/' + newKey1] = sfidaData1;
+    updates['/partite/' + newKey2] = sfidaData2;
 
     firebase.database().ref().update(updates, completed);
   });
