@@ -52,6 +52,14 @@ tr:nth-child(even) {
   width: 100%;
 }
 
+.table-classifica{
+  margin-top: 150px;
+}
+
+.table-partite{
+  margin-top: 30px;
+}
+
 .iscrizione-squadre{
   width: 100%;
   margin-top: 30px;

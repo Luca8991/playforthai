@@ -24,7 +24,7 @@
     <div class="girone" id="A">
       <span class="girone-intestazione">GIRONE A</span>
       <div class="girone-partite" id="partite-a">
-        <table>
+        <table id="table-partite-a" class="table-partite">
           <tr>
             <td>ORA</td>
             <td>SFIDA</td>
@@ -36,18 +36,52 @@
             <td></td>
           </tr>
         </table>
+
+        <table id="classifica-a" class="table-classifica">
+          <tr>
+            <td>SQUADRA</td>
+            <td>PUNTI</td>
+            <td>GF</td>
+            <td>GS</td>
+            <td>DIFF</td>
+          </tr>
+          <tr>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+          </tr>
+        </table>
       </div>
     </div>
     <div class="girone" id="B">
       <span class="girone-intestazione">GIRONE B</span>
       <div class="girone-partite" id="partite-b">
-        <table>
+        <table id="table-partite-b" class="table-partite">
           <tr>
             <td>ORA</td>
             <td>SFIDA</td>
             <td>RIS</td>
           </tr>
           <tr>
+            <td></td>
+            <td></td>
+            <td></td>
+          </tr>
+        </table>
+
+        <table id="classifica-b" class="table-classifica">
+          <tr>
+            <td>SQUADRA</td>
+            <td>PUNTI</td>
+            <td>GF</td>
+            <td>GS</td>
+            <td>DIFF</td>
+          </tr>
+          <tr>
+            <td></td>
+            <td></td>
             <td></td>
             <td></td>
             <td></td>
@@ -60,6 +94,7 @@
     <script>
       $(document).ready(function(){
         getPartite();
+        getClassifica();
       });
     </script>
   </body>

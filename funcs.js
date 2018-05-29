@@ -136,8 +136,8 @@ function getPartite(){
 
   firebase.database().ref('/partite').orderByChild('ora').on('value', function(snap){
     //elimina prime righe vuote tabelle partite
-    $("#partite-a table").find("tr:gt(0)").remove();
-    $("#partite-b table").find("tr:gt(0)").remove();
+    $("#table-partite-a").find("tr:gt(0)").remove();
+    $("#table-partite-b").find("tr:gt(0)").remove();
 
     var i = snap.numChildren();
     snap.forEach(function (snapshot) {
@@ -166,9 +166,9 @@ function getPartite(){
           console.log(appendhtml);
 
           if(girone === "A"){
-            $('#partite-a table tr:last').after(appendhtml);
+            $('#table-partite-a tr:last').after(appendhtml);
           }else if(girone === "B"){
-            $('#partite-b table tr:last').after(appendhtml);
+            $('#table-partite-b tr:last').after(appendhtml);
           }
         });
       });
@@ -326,4 +326,37 @@ function updateMarcatore(girone){
   //aggiorna gf e gs nella select
   $("#select-marc-squadra-"+girone).find(':selected').attr('data-gf', tot_gf);
   $("#select-marc-squadra-"+girone+" option:not(:selected)").attr('data-gs', tot_gs);
+}
+
+function getClassifica(){
+  var appendhtml = '';
+
+  firebase.database().ref('/squadre').orderByChild('score').on('value', function(snap){
+    //elimina prime righe vuote tabelle partite
+    $("#classifica-a").find("tr:gt(0)").remove();
+    $("#classifica-b").find("tr:gt(0)").remove();
+
+    var i = snap.numChildren();
+    snap.forEach(function (snapshot) {
+      var key = snapshot.key;
+      var name = snapshot.val().name;
+      var score = snapshot.val().score;
+      var gf = snapshot.val().gf;
+      var gs = snapshot.val().gs;
+      var diff = gf - gs;
+      var girone = snapshot.val().girone;
+
+      appendhtml = "<tr id='"+key+"'><td>"+name+"</td><td>"+score+"</td><td>"+gf+"</td><td>"+gs+"</td><td>"+diff+"</td></tr>";
+
+      console.log(appendhtml);
+
+      if(girone === "A"){
+        $('#classifica-a tr:first').after(appendhtml);
+      }else if(girone === "B"){
+        $('#classifica-b tr:first').after(appendhtml);
+      }
+    });
+
+    i--;
+  });
 }
