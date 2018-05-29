@@ -48,7 +48,7 @@
         </select>
         <input type="text" id="input-nome-A" placeholder="Nome..."/>
         <input type="number" class="input-gol-marcatore" id="input-gol-A" value="1"/>
-        <button id="btn-inserisci-marcatore-A">OK!</button>
+        <button id="btn-inserisci-marcatore-A" onclick="updateMarcatore('A');">OK!</button>
         <br />
         <br />
         <input type="text" id="input-ris-finale-A" placeholder="Ris finale..."/>
@@ -70,6 +70,22 @@
             <td></td>
           </tr>
         </table>
+      </div>
+      <div class="marcatori-partite" id="marcatori-b">
+        <p id="p-partita-B"></p>
+        <select class="marc-squadra-selection" id="select-marc-squadra-B">
+          <option value="0"></option>
+        </select>
+        <select class="marc-marcatore-selection" id="select-marc-marcatore-B">
+          <option data-gol='0' value="0">NUOVO</option>
+        </select>
+        <input type="text" id="input-nome-B" placeholder="Nome..."/>
+        <input type="number" class="input-gol-marcatore" id="input-gol-B" value="1"/>
+        <button id="btn-inserisci-marcatore-B" onclick="updateMarcatore('B');">OK!</button>
+        <br />
+        <br />
+        <input type="text" id="input-ris-finale-B" placeholder="Ris finale..."/>
+        <button id="btn-inserisci-ris-finale-B" onclick="updateRisultato('B')">OK!</button>
       </div>
     </div>
     <p id="load">Firebase SDK Loading&hellip;</p>

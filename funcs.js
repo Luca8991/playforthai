@@ -226,31 +226,37 @@ function getPartiteConsole(){
 }
 
 function fillFormMarcatori(girone, key_partita, s1, s2){
+  //pulisci inputs
+  $("#input-nome-"+girone).val('');
+  $("#input-gol-"+girone).val('1');
+  $("#input-ris-finale-"+girone).val('');
+
   //partita all'inizio del form
   var sfida = $('#'+key_partita).find("td:eq(1)").text(); //prendi il testo del td sfida
   $("#p-partita-"+girone).text(sfida);
 
   //inserisci squadre nella select per squadre
-  firebase.database().ref('/squadre').orderByKey().equalTo(s1).once('value', function(snap){
-    snap.forEach(function (snapshot) {
-      var nome_s1 = snapshot.val().name;
-
-      $('#select-marc-squadra-'+girone).append($("<option></option>").attr("value",s1).text(nome_s1));
-    });
-  });
-  firebase.database().ref('/squadre').orderByKey().equalTo(s2).once('value', function(snap){
-    snap.forEach(function (snapshot) {
-      var nome_s2 = snapshot.val().name;
-
-      $('#select-marc-squadra-'+girone).append($("<option></option>").attr("value",s2).text(nome_s2));
-    });
-  });
+  $('#select-marc-squadra-'+girone).find("option").remove(); //pulisci opzioni
+  fillSelectSquadra(s1, girone);
+  fillSelectSquadra(s2, girone);
 
   //inserisci marcatori prima squadra nella select per marcatori
   fillSelectMarcatore(s1, girone);
 
   //id partita nell'input aggiornamento risultato finale
   $("#input-ris-finale-"+girone).attr('data-partita', key_partita);
+}
+
+function fillSelectSquadra(squadra, girone){
+  firebase.database().ref('/squadre').orderByKey().equalTo(squadra).once('value', function(snap){
+    snap.forEach(function (snapshot) {
+      var nome_s1 = snapshot.val().name;
+      var gf_1 = snapshot.val().gf;
+      var gs_1 = snapshot.val().gs;
+
+      $('#select-marc-squadra-'+girone).append($("<option data-gf='"+gf_1+"' data-gs='"+gs_1+"'></option>").attr("value",squadra).text(nome_s1));
+    });
+  });
 }
 
 function fillSelectMarcatore(squadra, girone){
@@ -277,4 +283,47 @@ function updateRisultato(girone){
   updates['/partite/' + key_partita + '/risultato'] = risultato;
 
   firebase.database().ref().update(updates, completed);
+}
+
+function updateMarcatore(girone){
+  var key_marc = $("#select-marc-marcatore-"+girone).val();
+  var gol = Number($("#input-gol-"+girone).val());
+  var prec_gol = Number($("#select-marc-marcatore-"+girone).find(':selected').attr('data-gol'));
+  var tot_gol = prec_gol + gol;
+
+  var key_squadra = $("#select-marc-squadra-"+girone).val();
+  var prec_gf = Number($("#select-marc-squadra-"+girone).find(':selected').attr('data-gf'));
+  var tot_gf = prec_gf + gol;
+
+  var key_squadra_subisce = $("#select-marc-squadra-"+girone+" option:not(:selected)").val();
+  var prec_gs = Number($("#select-marc-squadra-"+girone+" option:not(:selected)").attr('data-gs'));
+  var tot_gs = prec_gs + gol;
+
+  var updates = {};
+
+  if(key_marc === '0'){  //se NUOVO viene selezionato nei marcatori
+    var nome_marc = $("#input-nome-"+girone).val().toUpperCase();
+
+    var newMarc = {
+      girone: girone,
+      gol: gol,
+      nome: nome_marc,
+      squadra: key_squadra
+    }
+
+    var newKey = firebase.database().ref().push().key;
+    updates['/marcatori/' + newKey] = newMarc;
+
+  } else{ //se viene selezionato marcatore esistente
+    updates['/marcatori/' + key_marc + '/gol'] = tot_gol;
+  }
+
+  updates['/squadre/' + key_squadra + '/gf'] = tot_gf;
+  updates['/squadre/' + key_squadra_subisce + '/gs'] = tot_gs;
+
+  firebase.database().ref().update(updates, completed);
+
+  //aggiorna gf e gs nella select
+  $("#select-marc-squadra-"+girone).find(':selected').attr('data-gf', tot_gf);
+  $("#select-marc-squadra-"+girone+" option:not(:selected)").attr('data-gs', tot_gs);
 }
