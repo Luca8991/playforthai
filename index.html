@@ -21,73 +21,90 @@
     <link rel="stylesheet" type="text/css" href="style.css">
   </head>
   <body>
-    <div class="girone" id="A">
-      <span class="girone-intestazione">GIRONE A</span>
-      <div class="girone-partite" id="partite-a">
-        <table id="table-partite-a" class="table-partite">
-          <tr>
-            <td>ORA</td>
-            <td>SFIDA</td>
-            <td>RIS</td>
-          </tr>
-          <tr>
-            <td></td>
-            <td></td>
-            <td></td>
-          </tr>
-        </table>
+    <div id="partite-classifiche" class="main-container">
+      <div class="girone" id="A">
+        <span class="girone-intestazione">GIRONE A</span>
+        <div class="girone-partite" id="partite-a">
+          <table id="table-partite-a" class="table-partite">
+            <tr style="font-weight: bold;">
+              <td>ORA</td>
+              <td>SFIDA</td>
+              <td>RIS</td>
+            </tr>
+            <tr>
+              <td></td>
+              <td></td>
+              <td></td>
+            </tr>
+          </table>
 
-        <table id="classifica-a" class="table-classifica">
-          <tr>
-            <td>SQUADRA</td>
-            <td>PUNTI</td>
-            <td>GF</td>
-            <td>GS</td>
-            <td>DIFF</td>
-          </tr>
-          <tr>
-            <td></td>
-            <td></td>
-            <td></td>
-            <td></td>
-            <td></td>
-          </tr>
-        </table>
+          <table id="classifica-a" class="table-classifica">
+            <tr style="font-weight: bold;">
+              <td>SQUADRA</td>
+              <td>PUNTI</td>
+              <td>GF</td>
+              <td>GS</td>
+              <td>DIFF</td>
+            </tr>
+            <tr>
+              <td></td>
+              <td></td>
+              <td></td>
+              <td></td>
+              <td></td>
+            </tr>
+          </table>
+        </div>
+      </div>
+      <div class="girone" id="B">
+        <span class="girone-intestazione">GIRONE B</span>
+        <div class="girone-partite" id="partite-b">
+          <table id="table-partite-b" class="table-partite">
+            <tr style="font-weight: bold;">
+              <td>ORA</td>
+              <td>SFIDA</td>
+              <td>RIS</td>
+            </tr>
+            <tr>
+              <td></td>
+              <td></td>
+              <td></td>
+            </tr>
+          </table>
+
+          <table id="classifica-b" class="table-classifica">
+            <tr style="font-weight: bold;">
+              <td>SQUADRA</td>
+              <td>PUNTI</td>
+              <td>GF</td>
+              <td>GS</td>
+              <td>DIFF</td>
+            </tr>
+            <tr>
+              <td></td>
+              <td></td>
+              <td></td>
+              <td></td>
+              <td></td>
+            </tr>
+          </table>
+        </div>
       </div>
     </div>
-    <div class="girone" id="B">
-      <span class="girone-intestazione">GIRONE B</span>
-      <div class="girone-partite" id="partite-b">
-        <table id="table-partite-b" class="table-partite">
-          <tr>
-            <td>ORA</td>
-            <td>SFIDA</td>
-            <td>RIS</td>
-          </tr>
-          <tr>
-            <td></td>
-            <td></td>
-            <td></td>
-          </tr>
-        </table>
-
-        <table id="classifica-b" class="table-classifica">
-          <tr>
-            <td>SQUADRA</td>
-            <td>PUNTI</td>
-            <td>GF</td>
-            <td>GS</td>
-            <td>DIFF</td>
-          </tr>
-          <tr>
-            <td></td>
-            <td></td>
-            <td></td>
-            <td></td>
-            <td></td>
-          </tr>
-        </table>
-      </div>
+    <div id="marcatori"  class="main-container marcatori-tab" style="display:none;">
+      <span class="girone-intestazione">MARCATORI</span>
+      <table>
+        <tr style="font-weight: bold;">
+          <td>Nome</td>
+          <td>Squadra (girone)</td>
+          <td>Goal fatti</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td></td>
+          <td></td>
+        </tr>
+      </table>
     </div>
     <p id="load">Firebase SDK Loading&hellip;</p>
 
@@ -95,7 +112,9 @@
       $(document).ready(function(){
         getPartite();
         getClassifica();
+        getMarcatori();
       });
+      setInterval(switchScreenTabs, interval); //interval dichiarato a inizio funcs.js
     </script>
   </body>
 </html>

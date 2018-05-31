@@ -1,3 +1,5 @@
+var interval = 30000; //intervallo per cambio tab a schermo (= 30sec)
+
 document.addEventListener('DOMContentLoaded', function() {
   // // 🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥
   // // The Firebase SDK is initialized and available here!
@@ -128,6 +130,16 @@ document.addEventListener('DOMContentLoaded', function() {
 
 function completed(){
   alert("Fatto!");
+}
+
+function switchScreenTabs(){
+  if($("#partite-classifiche").is(":visible")){
+    $("#partite-classifiche").fadeOut();
+    $("#marcatori").fadeIn('slow');
+  }else{
+    $("#partite-classifiche").fadeIn('slow');
+    $("#marcatori").fadeOut();
+  }
 }
 
 function getPartite(){
@@ -388,5 +400,35 @@ function getClassifica(){
     });
 
     i--;
+  });
+}
+
+function getMarcatori(){
+  firebase.database().ref('/marcatori').orderByChild('gol').on('value', function(snap){
+    //elimina prima riga vuota tabella marcatori
+    $("#marcatori table").find("tr:gt(0)").remove();
+
+    var i = snap.numChildren();
+    snap.forEach(function (snapshot) {
+      var key = snapshot.key;
+      var nome = snapshot.val().nome;
+      var gol = snapshot.val().gol;
+      var girone = snapshot.val().girone;
+      var key_squadra = snapshot.val().squadra;
+
+      firebase.database().ref('/squadre').orderByKey().equalTo(key_squadra).once('value', function(snap){
+        snap.forEach(function (snapshot) {
+          squadra = snapshot.val().name;
+
+          appendhtml = "<tr id='"+key+"'><td>"+nome+"</td><td>"+squadra+" ("+girone+")</td><td>"+gol+"</td></tr>";
+
+          console.log(appendhtml);
+
+          $('#marcatori table tr:last').after(appendhtml);
+        });
+      });
+
+
+    });
   });
 }

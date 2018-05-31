@@ -80,3 +80,15 @@ tr:nth-child(even) {
 .input-gol-marcatore{
   width: 50px;
 }
+
+.main-container{
+  height: 100%;
+}
+
+.marcatori-tab{
+  color: #f2f2f2;
+  margin-top: 30px;
+}
+.marcatori-tab table{
+  margin-top: 20px;
+}
