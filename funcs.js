@@ -193,7 +193,7 @@ function getPartite(){
 function getPartiteConsole(){
   var appendhtml = '';
 
-  firebase.database().ref('/partite').orderByChild('ora').on('value', function(snap){
+  firebase.database().ref('/partite').orderByChild('ordine').on('value', function(snap){
     //elimina prime righe vuote tabelle partite
     $("#partite-a table").find("tr:gt(0)").remove();
     $("#partite-b table").find("tr:gt(0)").remove();
